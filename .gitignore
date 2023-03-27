@@ -1,0 +1,10 @@
+node_modules
+!test/fixture/dep-package/node_modules
+tmp
+*.js
+*.d.ts
+*.js.map
+/.yalc
+yalc.lock
+*.log
+.env.local

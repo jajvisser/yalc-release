@@ -1,0 +1,29 @@
+{
+  "name": "yalc-release",
+  "version": "0.0.1",
+  "description": "yalc-release updates a single yalc file to set a package to a specific version",
+  "scripts": {
+    "build": "tsc",
+    "start": "dotenv -e .env.local ts-node build/setversion.ts"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/jajvisser/yalc-release.git"
+  },
+  "keywords": [
+    "yalc"
+  ],
+  "author": "jvisser",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/jajvisser/yalc-release/issues"
+  },
+  "homepage": "https://github.com/jajvisser/yalc-release#readme",
+  "devDependencies": {
+    "@types/node": "^18.15.10",
+    "dotenv-cli": "^7.1.0",
+    "minimist": "^1.0.2",
+    "ts-node": "^10.9.1",
+    "typescript": "^5.0.2"
+  }
+}

@@ -1,16 +1,14 @@
-const baseUrl =  process.env.BASEURL;
-
 const getHeader = (token: string) => {
     const requestHeaders: HeadersInit = new Headers();
     requestHeaders.set('PRIVATE-TOKEN', token);
     return requestHeaders;
 }
 
-const getFileUrl = (projectId: string, path: string, branch: string) => `${baseUrl}api/v4/projects/${projectId}/repository/files/${encodeURIComponent(path)}/raw?ref=${branch}`;
-const updateFileUrl = (projectId: string, path: string, branch: string) => `${baseUrl}api/v4/projects/${projectId}/repository/files/${encodeURIComponent(path)}?ref=${branch}`;
+const getFileUrl = (baseUrl: string, projectId: string, remoteYalcPath: string, branch: string) => `${baseUrl}/projects/${projectId}/repository/files/${encodeURIComponent(remoteYalcPath)}/raw?ref=${branch}`;
+const updateFileUrl = (baseUrl: string, projectId: string, remoteYalcPath: string, branch: string) => `${baseUrl}/projects/${projectId}/repository/files/${encodeURIComponent(remoteYalcPath)}?ref=${branch}`;
 
-export const fetchTextFile = async (options: { projectId: string, path: string, branch: string, token: string }) => {
-    const fileUrl = getFileUrl(options.projectId, options.path, options.branch);
+export const fetchTextFile = async (options: { baseUrl: string,  projectId: string, remoteYalcPath: string, branch: string, token: string }) => {
+    const fileUrl = getFileUrl(options.baseUrl, options.projectId, options.remoteYalcPath, options.branch);
 
     return await fetch(fileUrl, {
         method: 'GET',
@@ -20,7 +18,7 @@ export const fetchTextFile = async (options: { projectId: string, path: string, 
     });
 }
 
-export const updateTextFile = async (options: { projectId: string, path: string, branch: string, fileContents: string, message: string, token: string }) => {
+export const updateTextFile = async (options: { baseUrl: string, projectId: string, remoteYalcPath: string, branch: string, fileContents: string, message: string, token: string }) => {
     const commit = {
         "branch": options.branch, 
         "author_email": "gitlab-script@iodigital.com", 
@@ -29,7 +27,7 @@ export const updateTextFile = async (options: { projectId: string, path: string,
         "commit_message": options.message
     }
 
-    const fileUrl = updateFileUrl(options.projectId, options.path, options.branch);
+    const fileUrl = updateFileUrl(options.baseUrl, options.projectId, options.remoteYalcPath, options.branch);
     console.log({commit, fileUrl})
     /*
     await fetch(fileUrl, {

@@ -4,7 +4,7 @@
   "description": "yalc-release updates a single yalc file to set a package to a specific version",
   "scripts": {
     "build": "tsc",
-    "start": "dotenv -e .env.local ts-node build/setversion.ts"
+    "setyalcversion": "ts-node build/setversion.ts config.json"
   },
   "repository": {
     "type": "git",
@@ -22,7 +22,6 @@
   "devDependencies": {
     "@types/node": "^18.15.10",
     "dotenv-cli": "^7.1.0",
-    "minimist": "^1.0.2",
     "ts-node": "^10.9.1",
     "typescript": "^5.0.2"
   }

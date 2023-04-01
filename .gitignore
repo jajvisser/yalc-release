@@ -7,4 +7,4 @@ tmp
 /.yalc
 yalc.lock
 *.log
-.env.local
+config.json

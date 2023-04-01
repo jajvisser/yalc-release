@@ -1,6 +1,6 @@
 import fs from 'fs'
 
-export const setVersions = (options: { fileResponse: string, packageName: string, version: string, currentYalcCopyPackages?: string[] }): any => {
+export const setVersions = (options: { fileResponse: string, currentYalcPath: string, packageName: string, version: string, currentYalcCopyPackages: string[] }): any => {
     const yalc = JSON.parse(options.fileResponse);
     
     // Setting the yalc with the current version
@@ -13,19 +13,20 @@ export const setVersions = (options: { fileResponse: string, packageName: string
 
     // Optional copyPackages, copies the version of the current yalc.lock to the input file
     if(options.currentYalcCopyPackages) {
-        for(const item in options.currentYalcCopyPackages) {
+        for(const item of options.currentYalcCopyPackages) {
             if(yalc.packages[item]) {
                 const version = getVersionFromYalc({
+                    currentYalcPath: options.currentYalcPath,
                     packageName: item
                 })
                 if(version) {
                     yalc.packages[item].replaced = version
-                    console.log(`Setting ${item} to ${options.version} from yalc.lock`)
+                    console.log(`Copying version from current ${options.currentYalcPath} - Setting ${item} to ${version}`)
                 } else {
-                    console.error(`No version found for ${item} in the current yalc.lock`)
+                    console.error(`No version found for ${item} in the current ${options.currentYalcPath}`)
                 }
             } else {
-                console.error(`${item} not found in the current yalc.lock`)
+                console.error(`${item} not found in the current ${options.currentYalcPath}`)
             }
         }
     }
@@ -34,13 +35,17 @@ export const setVersions = (options: { fileResponse: string, packageName: string
 }
 
 // Copy the current version defined in this project to the external project
-const getVersionFromYalc = (options: { packageName: string }): string => {
-    const currentYalc = readCurrentYalc()
-    return currentYalc.packages[options.packageName].replaced
+const getVersionFromYalc = (options: { currentYalcPath: string, packageName: string }): string | null => {
+    const currentYalc = readCurrentYalc(options.currentYalcPath)
+    if(!currentYalc) {
+        console.error(`No could not read the current ${options.currentYalcPath}`)
+        return null;
+    }
+    return currentYalc.packages?.[options.packageName]?.replaced
 }
 
-const readCurrentYalc = ():any  => {
-    const buffer = fs.readFileSync('yalc.lock')
+const readCurrentYalc = (currentYalcPath: string):any  => {
+    const buffer = fs.readFileSync(currentYalcPath)
     return JSON.parse(buffer.toString('utf8'))
 }
 

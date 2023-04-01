@@ -1,47 +1,51 @@
 #!/usr/bin/env ts-node
 import { exit } from 'process';
+import { getConfig } from './config-reader';
 import { fetchTextFile, updateTextFile } from './gitlab-service';
 import { generateCommitMessageFromYalc, setVersions } from './yalc-service';
 
-const token = process.env.GITLAB_TOKEN!;
-
-const branch = process.env.BRANCH!; // Git branch
-const path = process.env.FILEPATH!; // path of the file on ref
-const projectId = process.env.PROJECTID!; // id or name of project (postnl-nl - 4327)
-const packageName = process.env.PACKAGENAME!;
-
-const version = process.argv[2];
+const configFile = process.argv[2];
 
 (async () => {
-    console.log(`Starting version actions for ${path}`)
+    if(!configFile) {
+        console.log(`Missing config file in command add a 'config.json' to the command with ts-node build/set-version config.json`)
+        exit()
+    }
+    console.log(`Starting version actions for ${configFile}`)
+    const config = getConfig(configFile)
+    if(!config) {
+        exit()
+    }
+    console.log(`Using this config ${JSON.stringify(config)}`)
 
     // Download the external file
     const fileResponse = await fetchTextFile({
-        projectId: projectId,
-        path: path,
-        token: token!,
-        branch: branch
+        baseUrl: config.baseUrl,
+        projectId: config.projectId,
+        remoteYalcPath: config.remoteYalcPath,
+        token: config.token,
+        branch: config.branch
     })
 
     // Setting version in downloaded yalc
     const newYalc = setVersions({
         fileResponse: fileResponse,
-        packageName: packageName,
-        version: version,
-        currentYalcCopyPackages: [
-            "test"
-        ]
+        packageName: config.packageName,
+        currentYalcPath: config.currentYalcPath,
+        version: config.version,
+        currentYalcCopyPackages: config.copyPackages ?? []
     })
 
     // Update file from 
-    await updateTextFile({
-        projectId: projectId,
-        path: path,
-        branch: branch,
+    /*await updateTextFile({
+        baseUrl: config.baseUrl,
+        projectId: config.projectId,
+        remoteYalcPath: config.remoteYalcPath,
+        branch: config.branch,
         fileContents: JSON.stringify(newYalc),
-        token: token!,
+        token: config.token,
         message: generateCommitMessageFromYalc(newYalc)
-    })
+    })*/
 
     exit()
 })()

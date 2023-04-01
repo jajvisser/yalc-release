@@ -1,0 +1,11 @@
+{
+    "baseUrl": "",
+    "token": "",
+    "branch": "",
+    "remoteYalcPath": "yalc.lock",
+    "currentYalcPath": "yalc.lock",
+    "version": "",
+    "projectId": "",
+    "packageName": "",
+    "copyPackages": [""]
+}
